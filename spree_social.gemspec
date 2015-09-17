@@ -25,7 +25,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'omniauth'
   s.add_runtime_dependency 'oa-core'
 
-  s.add_development_dependency 'pry'
   s.add_development_dependency 'capybara', '~> 2.4'
   s.add_development_dependency 'database_cleaner', '1.4.0'
   s.add_development_dependency 'ffaker'
