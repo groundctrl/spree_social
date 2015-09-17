@@ -1,6 +1,6 @@
 RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
   let(:user) { create(:user) }
-  let(:omni_params) { double('omni', :[] => nil).as_null_object }
+  let(:omni_params) { { 'provider' => 'wonderful_union' } }
   let(:order) { double('Spree::Order', associate_user: nil) }
 
   before do
