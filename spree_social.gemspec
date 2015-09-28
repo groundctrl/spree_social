@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'spree_core', '~> 3.0'
   s.add_runtime_dependency 'omniauth'
   s.add_runtime_dependency 'oa-core'
+  s.add_runtime_dependency 'omniauth-wonderful-union'
 
   s.add_development_dependency 'capybara', '~> 2.4'
   s.add_development_dependency 'database_cleaner', '1.4.0'
