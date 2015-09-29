@@ -2,3 +2,7 @@
  *= require spree/frontend
  *= require_tree .
 */
+
+.icon-spree-wonderful-union-circled:before {
+  content: "W";
+}
