@@ -1,6 +1,6 @@
 RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
   let(:user) { create(:user) }
-  let(:omni_params) { double('omni', :[] => nil).as_null_object }
+  let(:omni_params) { { 'provider' => 'wonderful_union' } }
   let(:order) { double('Spree::Order', associate_user: nil) }
 
   before do
@@ -16,17 +16,17 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
 
     it 'redirects properly' do
       expect(controller).to receive(:redirect_back_or_default)
-      controller.twitter
+      controller.wonderful_union
     end
 
     it 'displays an error message' do
-      controller.twitter
+      controller.wonderful_union
       expect(flash[:error]).not_to be_blank
     end
 
     it 'does not attempt authentication' do
       expect(controller).not_to receive(:sign_in_and_redirect)
-      controller.twitter
+      controller.wonderful_union
     end
   end
 
@@ -35,7 +35,7 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
 
     it 'associates the order with the user' do
       expect(order).to receive(:associate_user!).with(user)
-      controller.twitter
+      controller.wonderful_union
     end
   end
 
@@ -61,17 +61,17 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
 
         it 'does not need to create the user_authentication' do
           expect(user.user_authentications).not_to receive(:create!)
-          controller.twitter
+          controller.wonderful_union
         end
 
         it 'sets the flash notice' do
-          controller.twitter
+          controller.wonderful_union
           expect(flash[:notice]).not_to be_blank
         end
 
         it 'authenticates as that user' do
           expect(controller).to receive(:sign_in_and_redirect)
-          controller.twitter
+          controller.wonderful_union
         end
       end
 
@@ -83,17 +83,17 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
         it 'creates a new user_authentication' do
           expect(user).to receive(:apply_omniauth)
           expect(user).to receive(:save!)
-          controller.twitter
+          controller.wonderful_union
         end
 
         it 'sets the flash notice' do
-          controller.twitter
+          controller.wonderful_union
           expect(flash[:notice]).not_to be_blank
         end
 
         it 'redirects properly' do
           expect(controller).to receive(:redirect_back_or_default)
-          controller.twitter
+          controller.wonderful_union
         end
 
         it_should_behave_like 'associate_order'
@@ -115,17 +115,17 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
 
         it 'does not need to create the user_authentication' do
           expect(user.user_authentications).not_to receive(:create!)
-          controller.twitter
+          controller.wonderful_union
         end
 
         it 'does not create a new user account' do
           expect(Spree::User).not_to receive :new
-          controller.twitter
+          controller.wonderful_union
         end
 
         it 'authenticates as that user' do
           expect(controller).to receive(:sign_in_and_redirect).with(:spree_user, user)
-          controller.twitter
+          controller.wonderful_union
         end
       end
 
@@ -133,13 +133,13 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
         let(:user) { Spree::User.new }
         before do
           allow(Spree::UserAuthentication).to receive(:find_by_provider_and_uid).and_return(nil)
-          allow(controller).to receive(:auth_hash).and_return('provider' => 'facebook', 'info' => { 'email' => 'spree@gmail.com' }, 'uid' => '123')
+          allow(controller).to receive(:auth_hash).and_return('provider' => 'wonderful_union', 'info' => { 'email' => 'spree@gmail.com' }, 'uid' => '123')
         end
 
         context "email doesn't belongs to anyone" do
           it 'creates a new user' do
             expect(controller).to receive(:sign_in_and_redirect)
-            expect { controller.twitter }.to change(Spree::User, :count).by(1)
+            expect { controller.wonderful_union }.to change(Spree::User, :count).by(1)
           end
         end
 
@@ -147,14 +147,37 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
           before { @user = create(:user, email: 'spree@gmail.com') }
 
           it 'does not create new user' do
-            expect { controller.twitter }.to_not change(Spree::User, :count)
+            expect { controller.wonderful_union }.to_not change(Spree::User, :count)
           end
 
           it 'assigns authentication to existing user' do
-            expect { controller.twitter }.to change(@user.user_authentications, :count).by(1)
+            expect { controller.wonderful_union }.to change(@user.user_authentications, :count).by(1)
           end
         end
       end
+    end
+  end
+
+  describe '#setup' do
+    let(:fake_strategy_options) { Hash.new }
+
+    before do
+      request.env['devise.mapping'] = Devise.mappings[:spree_user]
+      request.env['omniauth.strategy'] = double
+      allow(request.env['omniauth.strategy']).to receive(:options).
+        and_return fake_strategy_options
+    end
+
+    it 'assigns return of #api_key and #api_secret to the requests omniauth env' do
+      fake_auth = double(api_key: 'IMA_KEY', api_secret: 'IMA_SECRET_SHHHHH!')
+      allow(SpreeSocial).to receive(:authorization).
+        and_return fake_auth
+
+      get :setup
+
+      expect(fake_strategy_options).to eq(
+        client_id: 'IMA_KEY', client_secret: 'IMA_SECRET_SHHHHH!'
+      )
     end
   end
 end
