@@ -159,7 +159,7 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
   end
 
   describe '#setup' do
-    let(:fake_strategy_options) { double(:[]= => true) }
+    let(:fake_strategy_options) { Hash.new }
 
     before do
       request.env['devise.mapping'] = Devise.mappings[:spree_user]
@@ -175,11 +175,8 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
 
       get :setup
 
-      expect(fake_strategy_options).to have_received(:[]=).with(
-        :client_id, 'IMA_KEY'
-      )
-      expect(fake_strategy_options).to have_received(:[]=).with(
-        :client_secret, 'IMA_SECRET_SHHHHH!'
+      expect(fake_strategy_options).to eq(
+        client_id: 'IMA_KEY', client_secret: 'IMA_SECRET_SHHHHH!'
       )
     end
   end

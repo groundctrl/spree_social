@@ -1,7 +1,5 @@
 RSpec.describe SpreeSocial do
   context 'constants' do
-    it { is_expected.to be_const_defined(:OAUTH_PROVIDERS) }
-
     it 'contain all providers' do
       oauth_providers = [
         %w(WonderfulUnion wonderful_union true),
@@ -12,7 +10,7 @@ RSpec.describe SpreeSocial do
 
   describe '.configure' do
     it 'yields itself' do
-      expect { |bloc| SpreeSocial.configure(&bloc) }.
+      expect { |block| SpreeSocial.configure(&block) }.
         to yield_with_args(SpreeSocial)
     end
   end
