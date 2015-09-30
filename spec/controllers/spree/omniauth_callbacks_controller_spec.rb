@@ -157,4 +157,30 @@ RSpec.describe Spree::OmniauthCallbacksController, type: :controller do
       end
     end
   end
+
+  describe '#setup' do
+    let(:fake_strategy_options) { double(:[]= => true) }
+
+    before do
+      request.env['devise.mapping'] = Devise.mappings[:spree_user]
+      request.env['omniauth.strategy'] = double
+      allow(request.env['omniauth.strategy']).to receive(:options).
+        and_return fake_strategy_options
+    end
+
+    it 'assigns return of #api_key and #api_secret to the requests omniauth env' do
+      fake_auth = double(api_key: 'IMA_KEY', api_secret: 'IMA_SECRET_SHHHHH!')
+      allow(SpreeSocial).to receive(:authorization).
+        and_return fake_auth
+
+      get :setup
+
+      expect(fake_strategy_options).to have_received(:[]=).with(
+        :client_id, 'IMA_KEY'
+      )
+      expect(fake_strategy_options).to have_received(:[]=).with(
+        :client_secret, 'IMA_SECRET_SHHHHH!'
+      )
+    end
+  end
 end

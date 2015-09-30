@@ -56,4 +56,19 @@ class Spree::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def auth_hash
     request.env['omniauth.auth']
   end
+
+  def setup
+    request.env['omniauth.strategy'].options[:client_id] =
+      social_auth_method.api_key
+    request.env['omniauth.strategy'].options[:client_secret] =
+      social_auth_method.api_secret
+
+    render text: 'Setup complete.', status: 404
+  end
+
+  private
+
+  def social_auth_method
+    SpreeSocial.authorization
+  end
 end
