@@ -4,10 +4,13 @@ Spree::UserSessionsController.class_eval do
   protected
 
   def wonderful_authentication
-    method = Spree::AuthenticationMethod.wu_available_for(@spree_user).first
-
     redirect_to(
-      spree.spree_user_omniauth_authorize_url(provider: method.provider)
-    ) if method
+      spree.spree_user_omniauth_authorize_url(provider: "wonderful_union")
+    ) if wonderful_union_available?
+  end
+
+  def wonderful_union_available?
+    Spree::AuthenticationMethod.available_for(@spree_user).
+      where(active: true)
   end
 end
