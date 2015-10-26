@@ -26,7 +26,7 @@ RSpec.feature 'signing in using Omniauth', :js do
     scenario 'going to sign in' do
       visit spree.root_path
       click_link 'Login'
-      find('a#wonderful-union').trigger('click')
+
       expect(page).to have_text 'You are now signed in with your Wonderful Union account.'
     end
   end
