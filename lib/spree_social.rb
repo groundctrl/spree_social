@@ -42,8 +42,23 @@ module SpreeSocial
   end
 
   def self.setup_key_for(provider, key, secret)
+
     Devise.setup do |config|
-      config.omniauth provider, key, secret, setup: true
+      config.omniauth provider, key, secret, options
+    end
+  end
+
+  def self.options
+    { setup: true }.tap do |options|
+      override_url = ENV.fetch("WUN_GATEKEEPER_SITE_URL", false)
+
+      if override_url
+        options[:client_options] = {
+          site: override_url,
+          authorize_url: "#{override_url}/oauth/authorize",
+          token_url: "#{override_url}/oauth/token"
+        }
+      end
     end
   end
 end
