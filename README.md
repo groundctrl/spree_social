@@ -133,6 +133,16 @@ SpreeSocial.init_provider('linkedin')
 
 ---
 
+## Running tests
+
+Since `spree_social` is an engine, before you can run tests, you must run
+`bundle exec rake test_app` first to generate a Rails application in
+`spec/dummy`.
+
+Then, run `bundle exec rake`.
+
+---
+
 ## Contributing
 
 See corresponding [guidelines][11].
