@@ -17,6 +17,10 @@ rescue LoadError
   exit
 end
 
+Rails.application.configure do
+  config.assets.precompile += %w(logo/spree_50.png favicon.ico)
+end
+
 require 'rspec/rails'
 require 'ffaker'
 
