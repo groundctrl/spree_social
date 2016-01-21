@@ -1,9 +1,11 @@
 require 'spree_core'
 require 'spree_auth_devise'
 require 'omniauth-wonderful-union'
+require 'coffee_script'
+
+require 'spree_social/configuration'
 require 'spree_social/engine'
 require 'spree_social/version'
-require 'coffee_script'
 
 module SpreeSocial
   OAUTH_PROVIDERS = [
@@ -11,19 +13,15 @@ module SpreeSocial
   ]
 
   def self.configure(&block)
-    yield self
+    yield configuration
   end
 
-  def self.authorization_proc=(auth_proc)
-    @authorization_proc = auth_proc
+  def self.configuration
+    @_configuration ||= Configuration.new
   end
 
   def self.authorization
-    if @authorization_proc
-      @authorization_proc.call
-    else
-      Spree::AuthenticationMethod.find_by!(environment: ::Rails.env)
-    end
+    configuration.find_authentication_method.call
   end
 
   # Setup all OAuth providers
@@ -42,7 +40,6 @@ module SpreeSocial
   end
 
   def self.setup_key_for(provider, key, secret)
-
     Devise.setup do |config|
       config.omniauth provider, key, secret, options
     end

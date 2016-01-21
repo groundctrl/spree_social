@@ -9,36 +9,21 @@ RSpec.describe SpreeSocial do
   end
 
   describe ".configure" do
-    it "yields itself" do
+    it "yields an instance of Spree::Configuration" do
       expect { |block| SpreeSocial.configure(&block) }.
-        to yield_with_args(SpreeSocial)
+        to yield_with_args(instance_of(SpreeSocial::Configuration))
     end
   end
 
   describe ".authorization" do
-    context "with authorization_proc" do
-      it "returns the response of #call" do
-        response = double
-        SpreeSocial.authorization_proc = -> { response }
+    it "returns the result of calling the find_authentication_method configuration setting" do
+      fake_authentication_method = double(:authentication_method)
+      find_authentication_method = -> { fake_authentication_method }
+      allow(SpreeSocial.configuration).
+        to receive(:find_authentication_method).
+        and_return(find_authentication_method)
 
-        expect(SpreeSocial.authorization).to eq response
-      end
-
-      after do
-        SpreeSocial.authorization_proc = nil
-      end
-    end
-
-    context "without authorization_proc" do
-      it "calls Spree::AuthenticationMethod.find_by!" do
-        response = double
-        allow(Spree::AuthenticationMethod).to receive(:find_by!) { response }
-
-        expect(SpreeSocial.authorization).to eq response
-        expect(Spree::AuthenticationMethod).to have_received(:find_by!).with(
-          environment: ::Rails.env
-        )
-      end
+      expect(SpreeSocial.authorization).to eq fake_authentication_method
     end
   end
 
