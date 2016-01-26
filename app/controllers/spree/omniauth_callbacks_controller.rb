@@ -46,7 +46,7 @@ class Spree::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def failure
     set_flash_message :alert, :failure, kind: failed_strategy.name.to_s.humanize, reason: failure_message
-    redirect_to spree.login_path
+    redirect_to root_path
   end
 
   def passthru
